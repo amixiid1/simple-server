@@ -1,10 +1,20 @@
 const cors = require('cors')
 const express = require("express");
 const app = express();
+const productsRouter = require('./products')
 
 app.use(cors({
     origin:['http://localhost:5500', 'http://127.0.0.1:5500']
 }))
+
+app.use((req,res,next)=>{
+    console.log(req.method, req.path)
+    next()
+})
+
+app.use(express.json())
+
+app.use('/products', productsRouter)
 
 app.get("/", (req, res) => {
   res.send("hello get is working");
@@ -18,26 +28,16 @@ app.get("/contact", (req, res) => {
   res.send("this is the contact page");
 });
 
-app.get("/products", (req, res) => {
-  res.json([
-    { id: 1, name: "Laptop", price: 1299 },
-    { id: 2, name: "Mouse", price: 50 },
-  ]);
-});
-
-app.get("/products/:id", (req, res) => {
-  const id = Number(req.params.id);
-
-  const products = [
-    { id: 1, name: "Laptop", price: 1299 },
-    { id: 2, name: "Mouse", price: 50 },
-  ];
-  const requestedProduct = products.find((product) => product.id === id);
-  res.json(requestedProduct)
-});
 
 app.get("/message",(req,res)=>{
     res.json({message:"Hello from your express backend 😊"})
+})
+
+app.post('/message',(req,res)=>{
+    const {name, message} = req.body
+    
+    console.log('new message: ',name,message)
+    res.json({message:'thank you for your message'})
 })
 
 app.listen(3000, () => {
